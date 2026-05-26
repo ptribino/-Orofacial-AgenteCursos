@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orofacial — Cursos de Estética Avançada</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>🦷</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+:root{
+  --slate:#0F1B2D;--terra:#C4622D;--paper:#F5F3EE;
+  --wa-dark:#111B21;--wa-chat-bg:#0B141A;--wa-bubble-in:#202C33;
+  --wa-bubble-out:#005C4B;--wa-text:#E9EDEF;--wa-text-muted:#8696A0;
+  --wa-header:#202C33;--wa-input-bg:#2A3942;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--wa-dark);display:flex;flex-direction:column;height:100vh}
+
+/* SPLASH */
+.splash{position:fixed;inset:0;background:var(--wa-chat-bg);display:flex;align-items:center;justify-content:center;z-index:100;flex-direction:column;gap:16px;transition:opacity .4s}
+.splash.hidden{opacity:0;pointer-events:none}
+.splash-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:white}
+.splash-logo span{color:var(--terra)}
+.splash-sub{font-size:13px;color:var(--wa-text-muted);text-align:center;line-height:1.6}
+.splash-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--terra);border-radius:50%;animation:spin .8s linear infinite;margin-top:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* TOP BAR */
+.top-bar{width:100%;background:var(--slate);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.brand{font-family:'Syne',sans-serif;font-weight:800;font-size:15px;color:white}
+.brand span{color:var(--terra)}
+.top-right{display:flex;align-items:center;gap:10px}
+.badge-live{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:3px 8px;border-radius:10px;background:rgba(37,211,102,.15);color:#25D366}
+.btn-reset{background:none;border:1px solid rgba(255,255,255,.12);color:#8696A0;padding:4px 10px;border-radius:6px;font-size:10px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-reset:hover{border-color:var(--terra);color:var(--terra)}
+
+/* CHAT */
+.chat-wrapper{flex:1;display:flex;flex-direction:column;max-width:520px;width:100%;margin:0 auto;min-height:0;background:var(--wa-dark);border-left:1px solid rgba(255,255,255,.04);border-right:1px solid rgba(255,255,255,.04)}
+
+.wa-header{background:var(--wa-header);padding:12px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.06)}
+.wa-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#C4622D,#E8945A);display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:15px;flex-shrink:0}
+.wa-info{flex:1}
+.wa-contact-name{color:var(--wa-text);font-size:15px;font-weight:600}
+.wa-contact-status{color:var(--wa-text-muted);font-size:12px;transition:color .2s}
+.wa-contact-status.active{color:#25D366}
+
+.chat-area{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:6px;background:var(--wa-chat-bg);min-height:0}
+
+/* INPUT */
+.input-bar{flex-shrink:0;display:flex;gap:8px;padding:10px 12px;background:var(--wa-dark);border-top:1px solid rgba(255,255,255,.06)}
+.input-bar input{flex:1;padding:10px 14px;background:var(--wa-input-bg);border:none;border-radius:10px;color:var(--wa-text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none}
+.input-bar input::placeholder{color:var(--wa-text-muted)}
+.input-bar button{width:42px;height:42px;border-radius:50%;background:var(--terra);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.input-bar button:hover{opacity:.85;transform:scale(1.05)}
+.input-bar button:disabled{opacity:.3;cursor:default;transform:none}
+.input-bar button svg{fill:white;width:20px;height:20px}
+
+/* BUBBLES */
+.bubble{max-width:85%;padding:8px 12px;border-radius:10px;font-size:13.5px;line-height:1.6;word-wrap:break-word;white-space:pre-wrap;animation:fadeIn .3s ease}
+.bubble.in{background:var(--wa-bubble-in);color:var(--wa-text);align-self:flex-start;border-top-left-radius:2px}
+.bubble.out{background:var(--wa-bubble-out);color:var(--wa-text);align-self:flex-end;border-top-right-radius:2px}
+.bubble .time{display:block;text-align:right;font-size:10px;color:var(--wa-text-muted);margin-top:4px}
+.bubble.error{background:#3B1C1C;border:1px solid #7F1D1D;color:#FCA5A5}
+
+.typing{display:flex;gap:4px;padding:12px 16px;align-self:flex-start}
+.typing span{width:7px;height:7px;background:var(--wa-text-muted);border-radius:50%;animation:typingDot 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+
+/* Day separator */
+.day-sep{text-align:center;padding:8px 0;font-size:11px;color:var(--wa-text-muted)}
+.day-sep span{background:var(--wa-bubble-in);padding:4px 14px;border-radius:8px}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes typingDot{0%,60%,100%{opacity:.3;transform:scale(.8)}30%{opacity:1;transform:scale(1)}}
+
+/* Mobile */
+@media(max-width:540px){
+  .chat-wrapper{max-width:100%;border:none}
+  .top-bar{padding:8px 12px}
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH SCREEN -->
+<div class="splash" id="splash">
+  <div class="splash-logo">Orofacial <span>Cursos</span></div>
+  <div class="splash-sub">Conectando com a Gabi...<br>Agente de cursos com IA</div>
+  <div class="splash-spinner"></div>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <div class="brand">Acessa<span>IA</span></div>
+  <div class="top-right">
+    <div class="badge-live">● IA Ativa</div>
+    <button class="btn-reset" onclick="resetChat()">↻ Nova conversa</button>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div class="chat-wrapper">
+  <div class="wa-header">
+    <div class="wa-avatar">G</div>
+    <div class="wa-info">
+      <div class="wa-contact-name">Gabi · Orofacial Cursos</div>
+      <div class="wa-contact-status" id="status">online</div>
+    </div>
+  </div>
+  <div class="chat-area" id="chatArea">
+    <div class="day-sep"><span>Hoje</span></div>
+  </div>
+  <div class="input-bar">
+    <input type="text" id="msgInput" placeholder="Digite sua mensagem..." disabled>
+    <button id="sendBtn" onclick="sendMessage()" disabled>
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+const FUNCTION_URL = '/.netlify/functions/chat';
+let conversationHistory = [];
+const chatArea = document.getElementById('chatArea');
+const msgInput = document.getElementById('msgInput');
+const sendBtn = document.getElementById('sendBtn');
+const statusEl = document.getElementById('status');
+
+const SYSTEM_PROMPT = `Você é a Gabi, assistente virtual do Instituto Orofacial (Instituto de Odontologia e Estética Avançada) em Pato Branco - PR. Você é responsável pelo canal de cursos da Orofacial.
+
+PERSONALIDADE:
+- Calorosa, profissional e acolhedora
+- Use emojis com moderação (1-3 por mensagem)
+- Trate sempre por "você" (informal mas respeitoso)
+- Seja direta e objetiva, sem enrolação
+- Use negrito com *asteriscos* para destacar informações importantes
+
+SEU OBJETIVO:
+Qualificar leads interessados em cursos, recomendar o curso ideal com base no perfil, apresentar informações detalhadas, e guiar até a matrícula (coleta de dados + Pix).
+
+FLUXO DA CONVERSA:
+1. BOAS-VINDAS: Se apresente como Gabi, diga que cuida dos cursos da Orofacial. Pergunte: nome, formação, experiência na estética (tempo), cidade.
+2. QUALIFICAÇÃO: Com base nas respostas, classifique o nível (iniciante/intermediário/avançado) e recomende o curso ideal.
+3. DETALHES: Apresente detalhes do curso (data, horário, local, turma, investimento, o que inclui). Ofereça enviar o material completo em PDF.
+4. DÚVIDAS: Responda perguntas com base na base de dados dos cursos. Se não souber, diga que vai verificar com a equipe.
+5. MATRÍCULA: Quando o lead quiser se matricular, peça os dados: nome completo, endereço completo, data de nascimento, estado civil, CPF, RG, formação, número do conselho, Instagram.
+6. PAGAMENTO: Informe o valor do sinal (10%) e a chave Pix: (46) 9980-5145. Peça para enviar o comprovante.
+7. CONFIRMAÇÃO: Confirme a matrícula e informe que a equipe entrará em contato com detalhes finais.
+
+REGRAS:
+- NUNCA invente informações que não estejam na base de dados
+- Se perguntarem sobre datas específicas de turmas, diga que as próximas datas serão confirmadas em breve e peça para deixar o contato/WhatsApp
+- Sempre mencione que as turmas são reduzidas (máx 4 alunos) e que incluem prática com pacientes reais
+- Se o lead perguntar por desconto, diga que o valor à vista já tem desconto embutido (mostre os dois valores)
+- Se perguntarem sobre cursos que não existem na base, diga educadamente que não oferecem no momento mas podem abrir turmas especiais sob demanda
+- Mantenha mensagens curtas e naturais (máximo 3-4 parágrafos). Não use markdown com headers (#) nem listas com bullets (-). Use quebras de linha simples e emojis como marcadores visuais quando precisar listar algo.
+
+BASE DE DADOS COMPLETA DOS CURSOS:
+
+1. TOXINA BOTULÍNICA — Pontos Estéticos e Terapêuticos
+   Investimento: R$ 3.000,00 (10x R$ 300) ou R$ 2.400,00 à vista
+   Carga horária: 8h (teórico + prático com pacientes/modelos)
+   Conteúdo: Histórico, anatomofisiologia, farmacologia, reconstituição, comparativo entre toxinas, materiais e técnicas, indicações/contraindicações, planejamento e aplicação
+   Sinal de matrícula: 10% = R$ 300,00 via Pix
+   Professor: Dr. Alexandre Dobrowolski (CD, 25 anos de experiência, especialista em HOF e cirurgia bucomaxilofacial)
+
+2. PREENCHIMENTO FACIAL (Ácido Hialurônico)
+   Investimento: R$ 3.500,00 (10x R$ 350) ou R$ 3.000,00 à vista
+   Carga horária: 8h (teórico + prático)
+   Conteúdo: Histórico dos preenchedores, anatomofisiologia, mecânica do envelhecimento, farmacologia do AH, anestesiologia, técnicas de aplicação, intercorrências
+   Sinal: 10% = R$ 350,00 via Pix
+   Professor: Dr. Alexandre Dobrowolski
+
+3. PREENCHIMENTO LABIAL
+   Investimento: R$ 3.000,00 (10x R$ 300) ou R$ 2.600,00 à vista
+   Carga horária: 8h (teórico + prático)
+   Conteúdo: Anatomofisiologia labial, desarmonias estéticas, mensuração e marcações, diferenças rosto masculino/feminino, Toxina para harmonização labial, fios de PDO no lábio, preenchimento de marionete, elevação de comissuras, skinbooster, 5 técnicas de preenchimento com agulha e cânula
+   Sinal: 10% = R$ 300,00 via Pix
+   Professor: Dr. Alexandre Dobrowolski
+
+4. FIOS DE SUSTENTAÇÃO E BIOESTIMULADORES
+   Investimento: R$ 3.500,00 (10x R$ 350) ou R$ 3.000,00 à vista
+   Carga horária: 8h (teórico + prático)
+   Conteúdo: Fios de PDO, ácido polilático, Hidróxiapatita de cálcio, policaprolactona, mecânica do envelhecimento, anestesiologia, estratégias de planejamento
+   Público-alvo: Biomédicos, Dentistas, Enfermeiros, Fisioterapeutas, Farmacêuticos e Médicos
+   Sinal: 10% = R$ 350,00 via Pix
+   Professor: Dr. Alexandre Dobrowolski
+
+5. ENDOLASER FACIAL E CORPORAL
+   Investimento: R$ 5.000,00 (10x R$ 500) ou R$ 4.500,00 à vista
+   Carga horária: 10h (teórico + prático)
+   Conteúdo: Laser de Diodo 1470nm para contração da pele e dissolução de gordura. 12 protocolos: pálpebras, terço médio (sulco nasogeniano/marionete), terço inferior (contorno facial/Jowl), papada, pescoço, axilar, abdominal, costas, braços, mãos, coxas/joelho, glúteos (celulite). Casos clínicos.
+   Sinal: 10% = R$ 500,00 via Pix
+   Professores: Dr. Alexandre Dobrowolski e Dra. Michelle Dobrowolski (biomédica esteta)
+
+6. MICROAGULHAMENTO
+   Investimento: R$ 1.600,00 (10x R$ 160) ou R$ 1.200,00 à vista
+   Carga horária: 8h (teórico + prático)
+   Conteúdo: Tipos de instrumentos e movimentos, indicações/contraindicações, regiões tratadas, protocolos, cuidados pós, ativos para cada tratamento
+   Público-alvo inclui Esteticistas
+   Sinal: 10% = R$ 160,00 via Pix
+
+7. PEELINGS
+   Investimento: R$ 2.500,00 à vista ou 10x R$ 300,00 no cartão
+   Carga horária: 8h (teórico + prático)
+   Conteúdo: Peelings físicos (diamante, ultrassônico, laser, dermapeeling) e químicos (glicólico, mandélico, salicílico, azelaico, retinoico, Jessner, fenol, TCA). Anatomia da face, sistema tegumentar, regeneração celular.
+   Sinal: 10% = R$ 300,00 via Pix
+
+8. DESPIGMENTAÇÃO (Ômer, Peelings e Jato de Plasma)
+   Investimento: R$ 3.000,00 à vista ou 10x de R$ 3.800,00 no cartão
+   Carga horária: 14h em 2 dias (teórico + prático)
+   Conteúdo: Anamnese detalhada, análise de pele, microagulhamento, remoção de pigmentos complexos, remoção de tatuagens e sobrancelhas, despigmentação química, cuidados pós, Peeling de Hollywood, protocolos estéticos
+   Sinal: 10% = R$ 300,00 via Pix
+
+9. RINOMODELAÇÃO E PREENCHIMENTO MANDÍBULA
+   Investimento: R$ 3.500,00 (10x R$ 350) ou R$ 3.000,00 à vista
+   Carga horária: 8h (teórico + prático)
+   Conteúdo: Anatomofisiologia nasal e mandibular, desarmonias estéticas, mensuração, cefalometria, perfiloplastia, Toxina para modelação, rinomodelação com AH e fios de PDO, elevação de ponta, fechamento de asa, afinamento de dorso, preenchimento de mento/corpo/ângulo de mandíbula, reposicionamento de Jowl
+   Sinal: 10% = R$ 350,00 via Pix
+   Professor: Dr. Alexandre Dobrowolski
+
+10. MINI LIFT FACIAL COM FIOS CIRÚRGICOS (Residência)
+    Investimento: R$ 8.000,00 (10x R$ 1.000,00)
+    Carga horária: 12h (teórico + cirurgia real em pacientes)
+    Conteúdo: Acesso cirúrgico, reposicionamento e remoção de coxins de gordura faciais, técnica de Endolaser cirúrgico, plicaturas faciais, técnica de fios Serdev, remoção do excesso de pele, intercorrências
+    Sinal: 10% = R$ 1.000,00 via Pix
+    Professor: Dr. Alexandre Dobrowolski
+
+11. HARMONIZAÇÃO GLÚTEA
+    Investimento: R$ 3.500,00 (10x R$ 350) ou R$ 3.000,00 à vista
+    Carga horária: 8h (teórico + prático)
+    Conteúdo: Bioestimuladores de colágeno (hidroxiapatita de cálcio, ácido L-polilático), anatomia do glúteo, preenchimento/volumização, correção de assimetria, associação com fios de sustentação e enzimas
+    Sinal: 10% = R$ 350,00 via Pix
+
+12. INTRADERMOTERAPIA INJETÁVEL
+    Investimento: R$ 2.000,00 (10x R$ 200) ou R$ 1.600,00 à vista
+    Carga horária: 8h (teórico + prático)
+    Conteúdo: Anatomia, mecanismo de ação, principais desordens estéticas, métodos de aplicação para: gordura localizada, FEG, estrias, flacidez, capilar, papada, aplicação intramuscular
+    Público-alvo inclui Fisioterapeutas
+    Sinal: 10% = R$ 200,00 via Pix
+
+13. JATO DE PLASMA
+    Investimento: R$ 2.200,00 (10x R$ 220) ou R$ 1.800,00 à vista
+    Carga horária: 8h (teórico + prático)
+    Conteúdo: Funcionamento e diferenças dos equipamentos, acessórios, mecanismo de ação, anestesiologia, técnicas e protocolos de aplicação, ativos associados
+    Sinal: 10% = R$ 220,00 via Pix
+    Professor: Dr. Alexandre Dobrowolski
+
+14. OZONIOTERAPIA (Estética e Terapêutico)
+    Investimento: R$ 3.000,00 (10x R$ 300) ou R$ 2.600,00 à vista
+    Carga horária: 16h (teórico + prático)
+    Conteúdo Estético: Emagrecimento, gordura localizada, celulite, flacidez dérmica, estrias, capilar, rejuvenescimento facial/mãos/colo, acne, olheiras, cicatrizes
+    Conteúdo Terapêutico: Fibromialgia, bursite, tendinopatias, osteoartrose, artrite reumatoide, síndrome do túnel do carpo, ATM, imunidade, aplicação retal/vaginal/auricular/local
+    Público-alvo inclui Esteticistas e Fisioterapeutas
+    Sinal: 10% = R$ 300,00 via Pix
+
+15. MICROVASOS (PEIM)
+    Investimento: R$ 1.600,00 (10x R$ 160) ou R$ 1.200,00 à vista
+    Carga horária: 8h (teórico + prático)
+    Conteúdo: Tipos de varizes, produtos utilizados (glicose), efeitos fisiológicos e adversos, indicações/contraindicações, cuidados pré e pós, técnica passo a passo
+    Público-alvo: Enfermeiros, Farmacêuticos, Biomédicos e Médicos
+    Sinal: 10% = R$ 160,00 via Pix
+    Professora: Jessica Burin (biomédica, pós-graduada em estética avançada)
+
+INFORMAÇÕES GERAIS:
+- Local: Orofacial — Instituto de Odontologia e Estética Avançada, Pato Branco - PR
+- Turmas reduzidas: máximo 4 alunos por turma
+- Todos os cursos incluem: material didático completo, prática com modelos/pacientes reais, certificado de conclusão, treinamento em manejo de complicações, coffee break
+- Todo o material é fornecido pelo curso
+- Público-alvo geral: Estudantes e profissionais da saúde (Biomédicos, Dentistas, Enfermeiros, Fisioterapeutas, Farmacêuticos, Esteticistas e Médicos). Para exercer a atividade: graduado com registro no conselho ativo.
+- Pagamento: Pix (à vista com desconto) ou cartão de crédito em até 10x sem juros, ou cheque mediante aprovação
+- Chave Pix para matrícula: (46) 9980-5145
+- Instagram: @orofacialcursos
+- Telefone/WhatsApp: 55 46 9980-5145`;
+
+function getTime(){
+  const n=new Date();
+  return n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
+}
+
+function scrollToBottom(){
+  requestAnimationFrame(()=>{chatArea.scrollTop=chatArea.scrollHeight});
+}
+
+function addBubble(text,dir){
+  const b=document.createElement('div');
+  b.className='bubble '+dir;
+  const formatted=text.replace(/\*(.*?)\*/g,'<strong>$1</strong>');
+  b.innerHTML=formatted+'<span class="time">'+getTime()+'</span>';
+  chatArea.appendChild(b);
+  scrollToBottom();
+}
+
+function addError(text){
+  const b=document.createElement('div');
+  b.className='bubble in error';
+  b.innerHTML='⚠️ '+text+'<span class="time">'+getTime()+'</span>';
+  chatArea.appendChild(b);
+  scrollToBottom();
+}
+
+function showTyping(){
+  const el=document.createElement('div');
+  el.className='typing';el.id='typingIndicator';
+  el.innerHTML='<span></span><span></span><span></span>';
+  chatArea.appendChild(el);scrollToBottom();
+  statusEl.textContent='digitando...';
+  statusEl.classList.add('active');
+}
+
+function hideTyping(){
+  const el=document.getElementById('typingIndicator');
+  if(el)el.remove();
+  statusEl.textContent='online';
+  statusEl.classList.remove('active');
+}
+
+async function callAgent(userMessage){
+  conversationHistory.push({role:'user',content:userMessage});
+
+  const resp=await fetch(FUNCTION_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-haiku-4-5-20251001',
+      max_tokens:1024,
+      system:SYSTEM_PROMPT,
+      messages:conversationHistory
+    })
+  });
+
+  const data=await resp.json();
+
+  if(!resp.ok){
+    throw new Error(data.error?.message||data.error||'Erro '+resp.status);
+  }
+
+  const reply=data.content[0].text;
+  conversationHistory.push({role:'assistant',content:reply});
+  return reply;
+}
+
+async function sendMessage(){
+  const text=msgInput.value.trim();
+  if(!text||sendBtn.disabled)return;
+  addBubble(text,'out');
+  msgInput.value='';
+  setInputEnabled(false);
+  showTyping();
+  try{
+    const reply=await callAgent(text);
+    hideTyping();
+    addBubble(reply,'in');
+  }catch(e){
+    hideTyping();
+    addError(e.message);
+  }
+  setInputEnabled(true);
+  msgInput.focus();
+}
+
+function setInputEnabled(v){
+  msgInput.disabled=!v;
+  sendBtn.disabled=!v;
+}
+
+async function initChat(){
+  try{
+    conversationHistory=[];
+    const reply=await callAgent('oi');
+    document.getElementById('splash').classList.add('hidden');
+    setInputEnabled(true);
+    addBubble(reply,'in');
+    msgInput.focus();
+  }catch(e){
+    document.getElementById('splash').innerHTML='<div style="color:#FCA5A5;font-size:14px;text-align:center;padding:24px;line-height:1.6">⚠️ Erro ao conectar com o agente:<br><strong>'+e.message+'</strong><br><br><span style="color:var(--wa-text-muted);font-size:12px">Verifique se a variável ANTHROPIC_API_KEY está configurada no Netlify.</span></div>';
+  }
+}
+
+function resetChat(){
+  chatArea.innerHTML='<div class="day-sep"><span>Hoje</span></div>';
+  conversationHistory=[];
+  setInputEnabled(false);
+  showTyping();
+  initChat();
+}
+
+msgInput.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}
+});
+
+// Start
+initChat();
+</script>
+</body>
+</html>
